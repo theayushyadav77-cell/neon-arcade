@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>NEON ARCADE - Play & Win</title>
+<style>
+  :root {
+    --bg: #050508;
+    --card: #101018;
+    --primary: #00f3ff;
+    --accent: #ff0055;
+    --gold: #ffb703;
+    --text: #ffffff;
+  }
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+    font-family: 'Segoe UI', Roboto, sans-serif;
+  }
+  body, html {
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg);
+    color: var(--text);
+    overflow: hidden;
+    touch-action: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* AD SLOTS (320x50 Sticky) */
+  .ad-banner {
+    width: 100%;
+    height: 52px;
+    background: #0a0a0f;
+    border-bottom: 1px solid #1f1f2e;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: #555;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    z-index: 100;
+  }
+  .ad-banner.bottom {
+    border-bottom: none;
+    border-top: 1px solid #1f1f2e;
+  }
+
+  /* TOP BAR (Stats) */
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 16px;
+    background: rgba(16, 16, 24, 0.9);
+    border-bottom: 1px solid rgba(0, 243, 255, 0.15);
+    flex-shrink: 0;
+    z-index: 50;
+  }
+  .brand {
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: 1px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stats-box {
+    display: flex;
+    gap: 10px;
+  }
+  .stat-pill {
+    background: #181824;
+    border: 1px solid #2a2a3d;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+  }
+  .stat-pill.streak { border-color: #ff6b00; color: #ff9d00; cursor: pointer; }
+  .stat-pill.coins { border-color: var(--gold); color: var(--gold); }
+
+  /* MAIN CONTAINER */
+  #main-area {
+    flex: 1;
+    position: relative;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  /* HUB MENU */
+  #hub-screen {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    height: 100%;
+    overflow-y: auto;
+  }
+  .install-banner {
+    background: linear-gradient(135deg, #1a103c, #0d2538);
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
+  }
+  .install-text h4 { font-size: 14px; color: var(--primary); }
+  .install-text p { font-size: 11px; color: #ccc; margin-top: 2px; }
+  .btn-small {
+    background: var(--primary);
+    color: #000;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-weight: 800;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .section-title {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: #888;
+    margin-top: 4px;
+  }
+
+  .game-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  .game-card {
+    background: var(--card);
+    border: 1px solid #222233;
+    border-radius: 14px;
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: transform 0.15s, border-color 0.15s;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+  }
+  .game-card:active { transform: scale(0.98); }
+  .game-card.g1 { border-left: 4px solid #00f3ff; }
+  .game-card.g2 { border-left: 4px solid #ff0055; }
+  .game-card.g3 { border-left: 4px solid #00ff88; }
+
+  .game-info h3 { font-size: 16px; margin-bottom: 4px; }
+  .game-info p { font-size: 12px; color: #999; }
+  .high-badge {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    background: rgba(255,255,255,0.07);
+    padding: 2px 8px;
+    border-radius: 6px;
+    color: #ddd;
+  }
+  .play-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    font-weight: bold;
+  }
+
+  /* SHOP SECTION */
+  .shop-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+  .skin-item {
+    min-width: 100px;
+    background: var(--card);
+    border: 1px solid #252538;
+    border-radius: 12px;
+    padding: 10px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .skin-item.active { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,243,255,0.3); }
+  .skin-preview {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin: 0 auto 8px;
+  }
+  .skin-name { font-size: 12px; font-weight: 700; }
+  .skin-cost { font-size: 11px; color: var(--gold); margin-top: 3px; }
+
+  /* GAME CANVAS SCREEN */
+  #game-screen {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: var(--bg);
+    display: none;
+    flex-direction: column;
+  }
+  .game-hud {
+    position: absolute;
+    top: 12px; left: 12px; right: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+  }
+  .btn-back {
+    pointer-events: auto;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+  }
+  .live-score {
+    font-size: 28px;
+    font-weight: 900;
+    text-shadow: 0 0 12px var(--primary);
+  }
+  canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* MODALS (Game Over & Daily Reward) */
+  .modal-overlay {
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(5, 5, 8, 0.88);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+  }
+  .modal-card {
+    background: #12121c;
+    border: 1px solid #2e2e48;
+    border-radius: 18px;
+    padding: 22px;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    animation: popIn 0.2s ease-out;
+  }
+  @keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-title { font-size: 24px; font-weight: 900; margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; color: #aaa; margin-bottom: 16px; }
+  .score-box {
+    background: #0a0a10;
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 16px;
+    display: flex;
+    justify-content: space-around;
+  }
+  .score-item span { display: block; font-size: 11px; color: #777; }
+  .score-item strong { font-size: 20px; color: #fff; }
+
+  .btn-block {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 800;
+    margin-bottom: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+  .btn-primary { background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(0,243,255,0.4); }
+  .btn-gold { background: linear-gradient(90deg, #ffb703, #fb8500); color: #000; }
+  .btn-whatsapp { background: #25D366; color: #000; }
+  .btn-ghost { background: #1f1f2e; color: #ccc; margin-bottom: 0; }
+</style>
+</head>
+<body>
+
+  <!-- TOP STICKY AD BANNER (Yahan Adsterra 320x50 code lagega) -->
+  <div class="ad-banner" id="top-ad">
+    <span>[ ADSTERRA 320x50 TOP BANNER SPACE ]</span>
+  </div>
+
+  <!-- TOP NAVIGATION & RETENTION STATS -->
+  <div class="top-nav">
+    <div class="brand">NEON ARCADE</div>
+    <div class="stats-box">
+      <div class="stat-pill streak" onclick="showStreakInfo()">🔥 <span id="ui-streak">1</span>d</div>
+      <div class="stat-pill coins">🪙 <span id="ui-coins">0</span></div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT AREA -->
+  <div id="main-area">
+    
+    <!-- HUB SCREEN -->
+    <div id="hub-screen">
+      <div class="install-banner">
+        <div class="install-text">
+          <h4>📲 Play Daily Offline!</h4>
+          <p>Add to Home Screen & get +50 Free Coins</p>
+        </div>
+        <button class="btn-small" onclick="installAppPrompt()">ADD APP</button>
+      </div>
+
+      <div class="section-title">🔥 Choose Your Challenge</div>
+      
+      <div class="game-grid">
+        <!-- GAME 1 -->
+        <div class="game-card g1" onclick="startGame('dodge')">
+          <div class="game-info">
+            <h3>⚡ Cyber Dodge</h3>
+            <p>Drag to dodge falling red lasers!</p>
+            <span class="high-badge">Best: <b id="best-dodge">0</b></span>
+          </div>
+          <div class="play-icon" style="color:#00f3ff;">▶</div>
+        </div>
+
+        <!-- GAME 2 -->
+        <div class="game-card g2" onclick="startGame('pulse')">
+          <div class="game-info">
+            <h3>🎯 Neon Lock</h3>
+            <p>Tap right when the ring hits the target!</p>
+            <span class="high-badge">Best: <b id="best-pulse">0</b></span>
+          </div>
+          <div class="play-icon" style="color:#ff0055;">▶</div>
+        </div>
+
+        <!-- GAME 3 -->
+        <div class="game-card g3" onclick="startGame('orbit')">
+          <div class="game-info">
+            <h3>🚀 Gravity Jump</h3>
+            <p>Tap to fly & pass through neon gates!</p>
+            <span class="high-badge">Best: <b id="best-orbit">0</b></span>
+          </div>
+          <div class="play-icon" style="color:#00ff88;">▶</div>
+        </div>
+      </div>
+
+      <div class="section-title">🛒 Neon Skin Shop (Unlock with Coins)</div>
+      <div class="shop-row" id="shop-container"></div>
+    </div>
+
+    <!-- ACTIVE GAME SCREEN -->
+    <div id="game-screen">
+      <div class="game-hud">
+        <button class="btn-back" onclick="quitToHub()">⬅ EXIT</button>
+        <div class="live-score" id="hud-score">0</div>
+      </div>
+      <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <!-- GAME OVER MODAL -->
+    <div class="modal-overlay" id="over-modal">
+      <div class="modal-card">
+        <div class="modal-title" style="color:var(--accent);">GAME OVER</div>
+        <div class="modal-sub" id="over-msg">So close! Try one more time.</div>
+        
+        <div class="score-box">
+          <div class="score-item">
+            <span>SCORE</span>
+            <strong id="final-score">0</strong>
+          </div>
+          <div class="score-item">
+            <span>BEST</span>
+            <strong id="final-best">0</strong>
+          </div>
+          <div class="score-item">
+            <span>COINS</span>
+            <strong style="color:var(--gold);" id="final-coins">+0</strong>
+          </div>
+        </div>
+
+        <!-- REWARDED AD BUTTON -->
+        <button class="btn-block btn-gold" id="btn-double" onclick="doubleCoinsAd()">
+          📺 DOUBLE COINS (2X BONUS)
+        </button>
+
+        <!-- PLAY AGAIN BUTTON (Triggers Pop-under every 3rd time) -->
+        <button class="btn-block btn-primary" onclick="replayGame()">
+          🔄 PLAY AGAIN
+        </button>
+
+        <!-- VIRAL WHATSAPP SHARE -->
+        <button class="btn-block btn-whatsapp" onclick="shareWhatsApp()">
+          ⚔️ CHALLENGE A FRIEND (+25 🪙)
+        </button>
+
+        <button class="btn-block btn-ghost" onclick="quitToHub()">
+          🏠 MAIN MENU
+        </button>
+      </div>
+    </div>
+
+    <!-- DAILY REWARD MODAL -->
+    <div class="modal-overlay" id="daily-modal">
+      <div class="modal-card">
+        <div class="modal-title" style="color:var(--gold);">🔥 DAILY BONUS!</div>
+        <div class="modal-sub" id="daily-sub">Day 1 Streak Active! Come back tomorrow to keep it alive.</div>
+        <div style="font-size:42px; margin: 15px 0;">🎁 +<span id="daily-amount">50</span> 🪙</div>
+        <button class="btn-block btn-primary" onclick="closeDailyModal()">CLAIM REWARD</button>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM STICKY AD BANNER (Yahan Adsterra 320x50 code lagega) -->
+  <div class="ad-banner bottom" id="bottom-ad">
+    <span>[ ADSTERRA 320x50 BOTTOM BANNER SPACE ]</span>
+  </div>
+
+<script>
+/* =========================================================
+   💰 MONETIZATION CONFIG (Yahan Apna Adsterra Direct Link Daalo)
+   ========================================================= */
+const ADSTERRA_DIRECT_LINK = "https://www.google.com"; // <-- APNA ADSTERRA DIRECT LINK YAHAN PASTE KARNA
+let deathCounter = 0;
+
+function triggerSmartAd(force = false) {
+  deathCounter++;
+  if (force || deathCounter % 3 === 0) {
+    window.open(ADSTERRA_DIRECT_LINK, '_blank');
+  }
+}
+
+/* =========================================================
+   🔊 SOUND ENGINE (Zero External Files - Pure Web Audio API)
+   ========================================================= */
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+function playTone(freq, type, duration) {
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  const osc = audioCtx.createOscillator();
+  const gain = audioCtx.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+  osc.start();
+  osc.stop(audioCtx.currentTime + duration);
+}
+function sfxPoint() { playTone(600, 'sine', 0.12); setTimeout(()=>playTone(900, 'sine', 0.15), 60); }
+function sfxHit() { playTone(140, 'sawtooth', 0.35); }
+function sfxClick() { playTone(400, 'triangle', 0.08); }
+
+/* =========================================================
+   💾 RETENTION & SAVE SYSTEM (LocalStorage)
+   ========================================================= */
+let userData = JSON.parse(localStorage.getItem('neonArcadeData')) || {
+  coins: 50,
+  streak: 1,
+  lastLogin: "",
+  appInstalledReward: false,
+  selectedSkin: "#00f3ff",
+  unlockedSkins: ["#00f3ff"],
+  best: { dodge: 0, pulse: 0, orbit: 0 }
+};
+
+const SKINS = [
+  { name: "Cyber Blue", color: "#00f3ff", cost: 0 },
+  { name: "Neon Pink", color: "#ff0055", cost: 100 },
+  { name: "Toxic Green", color: "#00ff66", cost: 250 },
+  { name: "Royal Gold", color: "#ffb703", cost: 500 },
+  { name: "Plasma Purple", color: "#b5179e", cost: 1000 }
+];
+
+function saveData() {
+  localStorage.setItem('neonArcadeData', JSON.stringify(userData));
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById('ui-coins').innerText = userData.coins;
+  document.getElementById('ui-streak').innerText = userData.streak;
+  document.getElementById('best-dodge').innerText = userData.best.dodge;
+  document.getElementById('best-pulse').innerText = userData.best.pulse;
+  document.getElementById('best-orbit').innerText = userData.best.orbit;
+  renderShop();
+}
+
+function checkDailyStreak() {
+  const today = new Date().toDateString();
+  if (userData.lastLogin !== today) {
+    const yesterday = new Date();
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    if (userData.lastLogin === yesterday.toDateString()) {
+      userData.streak++;
+    } else if (userData.lastLogin !== "") {
+      userData.streak = 1;
+    }
+    userData.lastLogin = today;
+    const reward = userData.streak * 30;
+    userData.coins += reward;
+    saveData();
+
+    document.getElementById('daily-amount').innerText = reward;
+    document.getElementById('daily-sub').innerText = `Day ${userData.streak} Streak! Play daily so your streak doesn't reset to 0!`;
+    document.getElementById('daily-modal').style.display = 'flex';
+  }
+}
+
+function closeDailyModal() {
+  sfxClick();
+  document.getElementById('daily-modal').style.display = 'none';
+}
+
+function showStreakInfo() {
+  alert(`🔥 Current Streak: ${userData.streak} Days!\nOpen this game every day to get bigger free coin drops!`);
+}
+
+function installAppPrompt() {
+  sfxClick();
+  alert("📲 TO INSTALL AS APP:\n\n1. Tap the 3 Dots (⋮) in the top-right corner of Chrome.\n2. Tap 'Add to Home screen'.\n\nNow you can play anytime with 1 tap!");
+  if (!userData.appInstalledReward) {
+    userData.coins += 50;
+    userData.appInstalledReward = true;
+    saveData();
+  }
+}
+
+/* =========================================================
+   🛒 SKIN SHOP LOGIC
+   ========================================================= */
+function renderShop() {
+  const container = document.getElementById('shop-container');
+  container.innerHTML = "";
+  SKINS.forEach(skin => {
+    const owned = userData.unlockedSkins.includes(skin.color);
+    const active = userData.selectedSkin === skin.color;
+    const div = document.createElement('div');
+    div.className = `skin-item ${active ? 'active' : ''}`;
+    div.innerHTML = `
+      <div class="skin-preview" style="background:${skin.color}; box-shadow:0 0 10px ${skin.color};"></div>
+      <div class="skin-name">${skin.name}</div>
+      <div class="skin-cost">${active ? 'EQUIPPED' : (owned ? 'OWNED' : '🪙 ' + skin.cost)}</div>
+    `;
+    div.onclick = () => selectOrBuySkin(skin);
+    container.appendChild(div);
+  });
+}
+
+function selectOrBuySkin(skin) {
+  sfxClick();
+  if (userData.unlockedSkins.includes(skin.color)) {
+    userData.selectedSkin = skin.color;
+    saveData();
+  } else if (userData.coins >= skin.cost) {
+    userData.coins -= skin.cost;
+    userData.unlockedSkins.push(skin.color);
+    userData.selectedSkin = skin.color;
+    sfxPoint();
+    saveData();
+  } else {
+    alert(`Need ${skin.cost - userData.coins} more coins! Play games to earn.`);
+  }
+}
+
+/* =========================================================
+   🎮 GAME ENGINE CORE (3-IN-1 CANVAS)
+   ========================================================= */
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+let activeGame = null;
+let animId = null;
+let score = 0;
+let earnedCoinsThisRound = 0;
+let doubledThisRound = false;
+let gameState = {};
+
+function resizeCanvas() {
+  canvas.width = canvas.parentElement.clientWidth;
+  canvas.height = canvas.parentElement.clientHeight;
+}
+window.addEventListener('resize', resizeCanvas);
+
+function startGame(type) {
+  sfxClick();
+  activeGame = type;
+  document.getElementById('hub-screen').style.display = 'none';
+  document.getElementById('over-modal').style.display = 'none';
+  document.getElementById('game-screen').style.display = 'flex';
+  resizeCanvas();
+  initGameMode(type);
+}
+
+function quitToHub() {
+  sfxClick();
+  cancelAnimationFrame(animId);
+  activeGame = null;
+  document.getElementById('game-screen').style.display = 'none';
+  document.getElementById('over-modal').style.display = 'none';
+  document.getElementById('hub-screen').style.display = 'flex';
+  updateUI();
+}
+
+function replayGame() {
+  sfxClick();
+  triggerSmartAd(false);
+  startGame(activeGame);
+}
+
+function triggerGameOver() {
+  sfxHit();
+  cancelAnimationFrame(animId);
+  
+  if (score > userData.best[activeGame]) {
+    userData.best[activeGame] = score;
+  }
+  earnedCoinsThisRound = Math.max(2, Math.floor(score * 1.5));
+  doubledThisRound = false;
+  userData.coins += earnedCoinsThisRound;
+  saveData();
+
+  document.getElementById('final-score').innerText = score;
+  document.getElementById('final-best').innerText = userData.best[activeGame];
+  document.getElementById('final-coins').innerText = `+${earnedCoinsThisRound}`;
+  document.getElementById('btn-double').style.display = 'flex';
+  document.getElementById('over-modal').style.display = 'flex';
+}
+
+function doubleCoinsAd() {
+  if (doubledThisRound) return;
+  sfxPoint();
+  triggerSmartAd(true);
+  userData.coins += earnedCoinsThisRound;
+  doubledThisRound = true;
+  document.getElementById('final-coins').innerText = `+${earnedCoinsThisRound * 2}`;
+  document.getElementById('btn-double').style.display = 'none';
+  saveData();
+}
+
+function shareWhatsApp() {
+  sfxClick();
+  userData.coins += 25;
+  saveData();
+  const url = window.location.href;
+  const text = `🔥 I just scored ${score} in NEON ARCADE! 99% can't beat my score. Play instantly (No Download): ${url}`;
+  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
+}
+
+/* =========================================================
+   🕹️ 3 ADDICTIVE GAME MODES
+   ========================================================= */
+function initGameMode(type) {
+  score = 0;
+  document.getElementById('hud-score').innerText = score;
+  const w = canvas.width;
+  const h = canvas.height;
+
+  if (type === 'dodge') {
+    gameState = {
+      px: w / 2,
+      py: h - 70,
+      pr: 16,
+      blocks: [],
+      frame: 0,
+      speed: 4.5
+    };
+  } else if (type === 'pulse') {
+    gameState = {
+      r: 20,
+      targetR: 95,
+      growing: true,
+      speed: 2.6,
+      tolerance: 16
+    };
+  } else if (type === 'orbit') {
+    gameState = {
+      by: h / 2,
+      vy: 0,
+      gravity: 0.42,
+      jump: -7.8,
+      pipes: [],
+      frame: 0
+    };
+  }
+  cancelAnimationFrame(animId);
+  gameLoop();
+}
+
+canvas.addEventListener('touchmove', (e) => {
+  if (activeGame === 'dodge') {
+    const rect = canvas.getBoundingClientRect();
+    gameState.px = e.touches[0].clientX - rect.left;
+  }
+});
+canvas.addEventListener('mousemove', (e) => {
+  if (activeGame === 'dodge' && e.buttons === 1) {
+    const rect = canvas.getBoundingClientRect();
+    gameState.px = e.clientX - rect.left;
+  }
+});
+canvas.addEventListener('pointerdown', (e) => {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+
+  if (activeGame === 'dodge') {
+    gameState.px = x;
+  } else if (activeGame === 'pulse') {
+    const diff = Math.abs(gameState.r - gameState.targetR);
+    if (diff <= gameState.tolerance) {
+      score++;
+      sfxPoint();
+      document.getElementById('hud-score').innerText = score;
+      gameState.speed = Math.min(6.5, gameState.speed + 0.18);
+      gameState.targetR = 55 + Math.random() * 65;
+    } else {
+      triggerGameOver();
+    }
+  } else if (activeGame === 'orbit') {
+    gameState.vy = gameState.jump;
+    sfxClick();
+  }
+});
+
+function gameLoop() {
+  const w = canvas.width;
+  const h = canvas.height;
+  ctx.fillStyle = '#050508';
+  ctx.fillRect(0, 0, w, h);
+
+  const skin = userData.selectedSkin;
+
+  if (activeGame === 'dodge') {
+    gameState.frame++;
+    if (gameState.frame % Math.max(18, 42 - Math.floor(score / 3)) === 0) {
+      const bw = 36 + Math.random() * 45;
+      gameState.blocks.push({
+        x: Math.random() * (w - bw),
+        y: -30,
+        w: bw,
+        h: 18
+      });
+    }
+
+    ctx.shadowBlur = 15;
+    ctx.shadowColor = skin;
+    ctx.fillStyle = skin;
+    ctx.beginPath();
+    ctx.arc(gameState.px, gameState.py, gameState.pr, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowColor = '#ff0055';
+    ctx.fillStyle = '#ff0055';
+    for (let i = gameState.blocks.length - 1; i >= 0; i--) {
+      let b = gameState.blocks[i];
+      b.y += gameState.speed + (score * 0.08);
+      ctx.fillRect(b.x, b.y, b.w, b.h);
+
+      if (
+        gameState.px + gameState.pr > b.x &&
+        gameState.px - gameState.pr < b.x + b.w &&
+        gameState.py + gameState.pr > b.y &&
+        gameState.py - gameState.pr < b.y + b.h
+      ) {
+        ctx.shadowBlur = 0;
+        return triggerGameOver();
+      }
+
+      if (b.y > h) {
+        gameState.blocks.splice(i, 1);
+        score++;
+        sfxPoint();
+        document.getElementById('hud-score').innerText = score;
+      }
+    }
+    ctx.shadowBlur = 0;
+  }
+
+  else if (activeGame === 'pulse') {
+    const cx = w / 2;
+    const cy = h / 2;
+
+    if (gameState.growing) {
+      gameState.r += gameState.speed;
+      if (gameState.r > 140) gameState.growing = false;
+    } else {
+      gameState.r -= gameState.speed;
+      if (gameState.r < 15) gameState.growing = true;
+    }
+
+    ctx.lineWidth = gameState.tolerance;
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+    ctx.beginPath();
+    ctx.arc(cx, cy, gameState.targetR, 0, Math.PI * 2);
+    ctx.stroke();
+
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = skin;
+    ctx.lineWidth = 6;
+    ctx.strokeStyle = skin;
+    ctx.beginPath();
+    ctx.arc(cx, cy, gameState.r, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    ctx.fillStyle = '#888';
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('TAP ANYWHERE WHEN RINGS ALIGN!', cx, h - 50);
+  }
+
+  else if (activeGame === 'orbit') {
+    gameState.frame++;
+    gameState.vy += gameState.gravity;
+    gameState.by += gameState.vy;
+
+    if (gameState.frame % 85 === 0) {
+      const gap = 135;
+      const topH = 50 + Math.random() * (h - gap - 120);
+      gameState.pipes.push({ x: w, topH, gap, passed: false });
+    }
+
+    const bx = w * 0.28;
+    const br = 13;
+
+    ctx.shadowBlur = 14;
+    ctx.shadowColor = skin;
+    ctx.fillStyle = skin;
+    ctx.beginPath();
+    ctx.arc(bx, gameState.by, br, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.shadowColor = '#00ff88';
+    ctx.fillStyle = '#00ff88';
+    for (let i = gameState.pipes.length - 1; i >= 0; i--) {
+      let p = gameState.pipes[i];
+      p.x -= 3.2;
+
+      ctx.fillRect(p.x, 0, 38, p.topH);
+      ctx.fillRect(p.x, p.topH + p.gap, 38, h);
+
+      if (bx + br > p.x && bx - br < p.x + 38) {
+        if (gameState.by - br < p.topH || gameState.by + br > p.topH + p.gap) {
+          ctx.shadowBlur = 0;
+          return triggerGameOver();
+        }
+      }
+
+      if (!p.passed && p.x + 38 < bx) {
+        p.passed = true;
+        score++;
+        sfxPoint();
+        document.getElementById('hud-score').innerText = score;
+      }
+
+      if (p.x < -50) gameState.pipes.splice(i, 1);
+    }
+    ctx.shadowBlur = 0;
+
+    if (gameState.by > h || gameState.by < 0) {
+      return triggerGameOver();
+    }
+  }
+
+  animId = requestAnimationFrame(gameLoop);
+}
+
+checkDailyStreak();
+updateUI();
+</script>
+</body>
+</html>
