@@ -1,901 +1,971 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>NEON ARCADE - Play & Win</title>
-<style>
-  :root {
-    --bg: #050508;
-    --card: #101018;
-    --primary: #00f3ff;
-    --accent: #ff0055;
-    --gold: #ffb703;
-    --text: #ffffff;
-  }
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    user-select: none;
-    -webkit-user-select: none;
-    font-family: 'Segoe UI', Roboto, sans-serif;
-  }
-  body, html {
-    width: 100%;
-    height: 100%;
-    background-color: var(--bg);
-    color: var(--text);
-    overflow: hidden;
-    touch-action: none;
-    display: flex;
-    flex-direction: column;
-  }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>NEON ARCADE - Play & Win</title>
 
-  /* AD SLOTS (320x50 Sticky) */
-  .ad-banner {
-    width: 100%;
-    height: 52px;
-    background: #0a0a0f;
-    border-bottom: 1px solid #1f1f2e;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 11px;
-    color: #555;
-    letter-spacing: 1px;
-    flex-shrink: 0;
-    z-index: 100;
-  }
-  .ad-banner.bottom {
-    border-bottom: none;
-    border-top: 1px solid #1f1f2e;
-  }
+  <!-- ADSTERRA POPUNDER SCRIPT -->
+  <script data-cfasync="false" src="https://afders.org/1/37809e3c984e1afaba9b638afed585fb"></script>
 
-  /* TOP BAR (Stats) */
-  .top-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 16px;
-    background: rgba(16, 16, 24, 0.9);
-    border-bottom: 1px solid rgba(0, 243, 255, 0.15);
-    flex-shrink: 0;
-    z-index: 50;
-  }
-  .brand {
-    font-weight: 900;
-    font-size: 18px;
-    letter-spacing: 1px;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-  }
-  .stats-box {
-    display: flex;
-    gap: 10px;
-  }
-  .stat-pill {
-    background: #181824;
-    border: 1px solid #2a2a3d;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.5);
-  }
-  .stat-pill.streak { border-color: #ff6b00; color: #ff9d00; cursor: pointer; }
-  .stat-pill.coins { border-color: var(--gold); color: var(--gold); }
+  <style>
+    :root {
+      --bg-dark: #05050a;
+      --card-bg: #0d0e18;
+      --neon-cyan: #00f3ff;
+      --neon-pink: #ff007f;
+      --neon-gold: #ffb703;
+      --neon-green: #00ff66;
+      --neon-purple: #b5179e;
+      --text-main: #ffffff;
+      --text-muted: #8b8d9e;
+    }
 
-  /* MAIN CONTAINER */
-  #main-area {
-    flex: 1;
-    position: relative;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+      -webkit-touch-callout: none;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
 
-  /* HUB MENU */
-  #hub-screen {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    height: 100%;
-    overflow-y: auto;
-  }
-  .install-banner {
-    background: linear-gradient(135deg, #1a103c, #0d2538);
-    border: 1px solid var(--primary);
-    border-radius: 12px;
-    padding: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    box-shadow: 0 0 15px rgba(0, 243, 255, 0.15);
-  }
-  .install-text h4 { font-size: 14px; color: var(--primary); }
-  .install-text p { font-size: 11px; color: #ccc; margin-top: 2px; }
-  .btn-small {
-    background: var(--primary);
-    color: #000;
-    border: none;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-weight: 800;
-    font-size: 12px;
-    cursor: pointer;
-  }
+    body {
+      background-color: var(--bg-dark);
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 243, 255, 0.12), transparent 50%),
+        radial-gradient(circle at 50% 100%, rgba(255, 0, 127, 0.12), transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
 
-  .section-title {
-    font-size: 13px;
-    text-transform: uppercase;
-    letter-spacing: 1.5px;
-    color: #888;
-    margin-top: 4px;
-  }
+    /* AD BANNER CONTAINERS */
+    .ad-banner-slot {
+      width: 320px;
+      min-height: 54px;
+      margin: 6px auto;
+      background: rgba(13, 14, 24, 0.9);
+      border: 1px solid rgba(0, 243, 255, 0.25);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      box-shadow: 0 0 12px rgba(0, 243, 255, 0.1);
+      z-index: 20;
+    }
 
-  .game-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-  }
-  .game-card {
-    background: var(--card);
-    border: 1px solid #222233;
-    border-radius: 14px;
-    padding: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    transition: transform 0.15s, border-color 0.15s;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .game-card:active { transform: scale(0.98); }
-  .game-card.g1 { border-left: 4px solid #00f3ff; }
-  .game-card.g2 { border-left: 4px solid #ff0055; }
-  .game-card.g3 { border-left: 4px solid #00ff88; }
+    /* MAIN APP WRAPPER */
+    .app-container {
+      width: 100%;
+      max-width: 420px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 8px 14px;
+      position: relative;
+    }
 
-  .game-info h3 { font-size: 16px; margin-bottom: 4px; }
-  .game-info p { font-size: 12px; color: #999; }
-  .high-badge {
-    display: inline-block;
-    margin-top: 6px;
-    font-size: 11px;
-    background: rgba(255,255,255,0.07);
-    padding: 2px 8px;
-    border-radius: 6px;
-    color: #ddd;
-  }
-  .play-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 18px;
-    font-weight: bold;
-  }
+    /* TOP HUD */
+    .top-hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 10px 14px;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    }
 
-  /* SHOP SECTION */
-  .shop-row {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 8px;
-  }
-  .skin-item {
-    min-width: 100px;
-    background: var(--card);
-    border: 1px solid #252538;
-    border-radius: 12px;
-    padding: 10px;
-    text-align: center;
-    cursor: pointer;
-  }
-  .skin-item.active { border-color: var(--primary); box-shadow: 0 0 10px rgba(0,243,255,0.3); }
-  .skin-preview {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    margin: 0 auto 8px;
-  }
-  .skin-name { font-size: 12px; font-weight: 700; }
-  .skin-cost { font-size: 11px; color: var(--gold); margin-top: 3px; }
+    .brand-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.3);
+    }
 
-  /* GAME CANVAS SCREEN */
-  #game-screen {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: var(--bg);
-    display: none;
-    flex-direction: column;
-  }
-  .game-hud {
-    position: absolute;
-    top: 12px; left: 12px; right: 12px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    pointer-events: none;
-    z-index: 10;
-  }
-  .btn-back {
-    pointer-events: auto;
-    background: rgba(255,255,255,0.1);
-    border: 1px solid rgba(255,255,255,0.2);
-    color: #fff;
-    padding: 6px 12px;
-    border-radius: 8px;
-    font-size: 12px;
-    font-weight: bold;
-    backdrop-filter: blur(4px);
-    cursor: pointer;
-  }
-  .live-score {
-    font-size: 28px;
-    font-weight: 900;
-    text-shadow: 0 0 12px var(--primary);
-  }
-  canvas {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
+    .hud-stats {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
 
-  /* MODALS (Game Over & Daily Reward) */
-  .modal-overlay {
-    position: absolute;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(5, 5, 8, 0.88);
-    backdrop-filter: blur(6px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 200;
-    padding: 20px;
-  }
-  .modal-card {
-    background: #12121c;
-    border: 1px solid #2e2e48;
-    border-radius: 18px;
-    padding: 22px;
-    width: 100%;
-    max-width: 320px;
-    text-align: center;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
-    animation: popIn 0.2s ease-out;
-  }
-  @keyframes popIn {
-    from { transform: scale(0.85); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
-  }
-  .modal-title { font-size: 24px; font-weight: 900; margin-bottom: 6px; }
-  .modal-sub { font-size: 13px; color: #aaa; margin-bottom: 16px; }
-  .score-box {
-    background: #0a0a10;
-    border-radius: 12px;
-    padding: 12px;
-    margin-bottom: 16px;
-    display: flex;
-    justify-content: space-around;
-  }
-  .score-item span { display: block; font-size: 11px; color: #777; }
-  .score-item strong { font-size: 20px; color: #fff; }
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 5px 10px;
+      border-radius: 20px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
 
-  .btn-block {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 10px;
-    font-size: 14px;
-    font-weight: 800;
-    margin-bottom: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-  }
-  .btn-primary { background: var(--primary); color: #000; box-shadow: 0 0 15px rgba(0,243,255,0.4); }
-  .btn-gold { background: linear-gradient(90deg, #ffb703, #fb8500); color: #000; }
-  .btn-whatsapp { background: #25D366; color: #000; }
-  .btn-ghost { background: #1f1f2e; color: #ccc; margin-bottom: 0; }
-</style>
+    .stat-pill.coins {
+      color: var(--neon-gold);
+      border-color: rgba(255, 183, 3, 0.35);
+    }
+
+    .stat-pill.streak {
+      color: var(--neon-pink);
+      border-color: rgba(255, 0, 127, 0.35);
+    }
+
+    /* NAV TABS */
+    .nav-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 9px 0;
+      border-radius: 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .tab-btn.active {
+      color: #05050a;
+      background: var(--neon-cyan);
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 14px rgba(0, 243, 255, 0.5);
+    }
+
+    /* GAME SELECTOR */
+    .game-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .game-card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .game-card.selected {
+      border-color: var(--neon-pink);
+      box-shadow: 0 0 14px rgba(255, 0, 127, 0.35);
+      background: rgba(255, 0, 127, 0.08);
+    }
+
+    .game-icon {
+      font-size: 1.4rem;
+      margin-bottom: 4px;
+    }
+
+    .game-name {
+      font-size: 0.72rem;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      color: var(--text-main);
+    }
+
+    .game-best {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* CANVAS ARENA */
+    .arena-wrapper {
+      position: relative;
+      flex: 1;
+      min-height: 330px;
+      background: #070810;
+      border: 2px solid rgba(0, 243, 255, 0.3);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: inset 0 0 30px rgba(0, 243, 255, 0.08), 0 0 20px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* OVERLAYS */
+    .overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(5, 5, 10, 0.88);
+      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      text-align: center;
+      z-index: 10;
+    }
+
+    .overlay.hidden {
+      display: none;
+    }
+
+    .overlay-title {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: 1.5px;
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      color: var(--neon-cyan);
+      text-shadow: 0 0 15px rgba(0, 243, 255, 0.5);
+    }
+
+    .overlay-sub {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+      max-width: 260px;
+      line-height: 1.4;
+    }
+
+    .score-box {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 14px;
+      padding: 12px 24px;
+      margin-bottom: 16px;
+      width: 85%;
+    }
+
+    .score-big {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: var(--neon-gold);
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, var(--neon-cyan), #00a8ff);
+      color: #05050a;
+      border: none;
+      padding: 13px 28px;
+      border-radius: 30px;
+      font-size: 0.98rem;
+      font-weight: 900;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 20px rgba(0, 243, 255, 0.5);
+      margin-bottom: 10px;
+      width: 85%;
+      transition: transform 0.15s;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.96);
+    }
+
+    .btn-reward {
+      background: linear-gradient(90deg, var(--neon-gold), #ff7b00);
+      color: #05050a;
+      border: none;
+      padding: 11px 22px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 900;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 0 18px rgba(255, 183, 3, 0.45);
+      width: 85%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    /* SHOP PANEL */
+    .panel-view {
+      display: none;
+      flex: 1;
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 16px;
+      padding: 14px;
+      overflow-y: auto;
+    }
+
+    .panel-view.active {
+      display: block;
+    }
+
+    .skins-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .skin-item {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 12px;
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .skin-item.equipped {
+      border-color: var(--neon-green);
+      box-shadow: 0 0 12px rgba(0, 255, 102, 0.25);
+    }
+
+    .skin-swatch {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      margin: 0 auto 8px;
+      box-shadow: 0 0 15px currentColor;
+    }
+
+    .skin-title {
+      font-size: 0.82rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .skin-status {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--neon-gold);
+    }
+  </style>
 </head>
 <body>
 
-  <!-- TOP STICKY AD BANNER (Yahan Adsterra 320x50 code lagega) -->
-  <div class="ad-banner" id="top-ad">
-    <span>[ ADSTERRA 320x50 TOP BANNER SPACE ]</span>
+  <!-- TOP 320x50 ADSTERRA BANNER -->
+  <div class="ad-banner-slot" id="top-ad-slot">
+    <script>
+      atOptions = {
+        'key' : '35e165b97d109618313093189a629d7b',
+        'format' : 'iframe',
+        'height' : 50,
+        'width' : 320,
+        'params' : {}
+      };
+    </script>
+    <script src="https://bicea.org/22/35e165b97d109618313093189a629d7b"></script>
   </div>
 
-  <!-- TOP NAVIGATION & RETENTION STATS -->
-  <div class="top-nav">
-    <div class="brand">NEON ARCADE</div>
-    <div class="stats-box">
-      <div class="stat-pill streak" onclick="showStreakInfo()">🔥 <span id="ui-streak">1</span>d</div>
-      <div class="stat-pill coins">🪙 <span id="ui-coins">0</span></div>
+  <div class="app-container">
+    <!-- HUD -->
+    <div class="top-hud">
+      <div class="brand-title">NEON ARCADE</div>
+      <div class="hud-stats">
+        <div class="stat-pill streak" title="Daily Login Streak">🔥 <span id="streak-val">1</span>d</div>
+        <div class="stat-pill coins">🪙 <span id="coins-val">0</span></div>
+      </div>
+    </div>
+
+    <!-- NAVIGATION -->
+    <div class="nav-tabs">
+      <button class="tab-btn active" id="tab-play" onclick="switchTab('play')">🎮 Play Games</button>
+      <button class="tab-btn" id="tab-shop" onclick="switchTab('shop')">🎨 Skin Shop</button>
+    </div>
+
+    <!-- PLAY VIEW -->
+    <div id="view-play" style="display:flex; flex-direction:column; flex:1;">
+      <div class="game-selector">
+        <div class="game-card selected" id="card-dodge" onclick="selectGame('dodge')">
+          <div class="game-icon">☄️</div>
+          <div class="game-name">Cyber Dodge</div>
+          <div class="game-best">Best: <span id="best-dodge">0</span></div>
+        </div>
+        <div class="game-card" id="card-lock" onclick="selectGame('lock')">
+          <div class="game-icon">🔐</div>
+          <div class="game-name">Neon Lock</div>
+          <div class="game-best">Best: <span id="best-lock">0</span></div>
+        </div>
+        <div class="game-card" id="card-jump" onclick="selectGame('jump')">
+          <div class="game-icon">🚀</div>
+          <div class="game-name">Gravity Jump</div>
+          <div class="game-best">Best: <span id="best-jump">0</span></div>
+        </div>
+      </div>
+
+      <!-- GAME CANVAS -->
+      <div class="arena-wrapper" id="arena">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- START OVERLAY -->
+        <div class="overlay" id="start-overlay">
+          <div class="overlay-title" id="start-title">CYBER DODGE</div>
+          <div class="overlay-sub" id="start-desc">Tap left or right side of the screen to dodge falling neon lasers!</div>
+          <button class="btn-primary" onclick="startGame()">▶ PLAY NOW</button>
+          <button class="btn-reward" onclick="claimFreeBonus()">🎁 +25 FREE COINS</button>
+        </div>
+
+        <!-- GAME OVER OVERLAY -->
+        <div class="overlay hidden" id="gameover-overlay">
+          <div class="overlay-title" style="color: var(--neon-pink);">GAME OVER</div>
+          <div class="score-box">
+            <div style="font-size:0.75rem; color:var(--text-muted);">SCORE</div>
+            <div class="score-big" id="final-score">0</div>
+            <div style="font-size:0.8rem; color:var(--neon-green); margin-top:4px;">+<span id="earned-coins">0</span> Coins Earned</div>
+          </div>
+          <button class="btn-reward" id="double-btn" onclick="doubleCoinsAd()" style="margin-bottom:10px;">⚡ 2X COINS (BONUS)</button>
+          <button class="btn-primary" onclick="retryGame()">🔄 PLAY AGAIN</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHOP VIEW -->
+    <div class="panel-view" id="view-shop">
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="font-size:1rem;">Unlock Neon Skins</h3>
+        <button class="btn-reward" style="width:auto; padding:6px 12px; font-size:0.75rem;" onclick="claimFreeBonus()">+25 Coins</button>
+      </div>
+      <div class="skins-grid" id="skins-container"></div>
     </div>
   </div>
 
-  <!-- MAIN CONTENT AREA -->
-  <div id="main-area">
-    
-    <!-- HUB SCREEN -->
-    <div id="hub-screen">
-      <div class="install-banner">
-        <div class="install-text">
-          <h4>📲 Play Daily Offline!</h4>
-          <p>Add to Home Screen & get +50 Free Coins</p>
-        </div>
-        <button class="btn-small" onclick="installAppPrompt()">ADD APP</button>
-      </div>
-
-      <div class="section-title">🔥 Choose Your Challenge</div>
-      
-      <div class="game-grid">
-        <!-- GAME 1 -->
-        <div class="game-card g1" onclick="startGame('dodge')">
-          <div class="game-info">
-            <h3>⚡ Cyber Dodge</h3>
-            <p>Drag to dodge falling red lasers!</p>
-            <span class="high-badge">Best: <b id="best-dodge">0</b></span>
-          </div>
-          <div class="play-icon" style="color:#00f3ff;">▶</div>
-        </div>
-
-        <!-- GAME 2 -->
-        <div class="game-card g2" onclick="startGame('pulse')">
-          <div class="game-info">
-            <h3>🎯 Neon Lock</h3>
-            <p>Tap right when the ring hits the target!</p>
-            <span class="high-badge">Best: <b id="best-pulse">0</b></span>
-          </div>
-          <div class="play-icon" style="color:#ff0055;">▶</div>
-        </div>
-
-        <!-- GAME 3 -->
-        <div class="game-card g3" onclick="startGame('orbit')">
-          <div class="game-info">
-            <h3>🚀 Gravity Jump</h3>
-            <p>Tap to fly & pass through neon gates!</p>
-            <span class="high-badge">Best: <b id="best-orbit">0</b></span>
-          </div>
-          <div class="play-icon" style="color:#00ff88;">▶</div>
-        </div>
-      </div>
-
-      <div class="section-title">🛒 Neon Skin Shop (Unlock with Coins)</div>
-      <div class="shop-row" id="shop-container"></div>
-    </div>
-
-    <!-- ACTIVE GAME SCREEN -->
-    <div id="game-screen">
-      <div class="game-hud">
-        <button class="btn-back" onclick="quitToHub()">⬅ EXIT</button>
-        <div class="live-score" id="hud-score">0</div>
-      </div>
-      <canvas id="gameCanvas"></canvas>
-    </div>
-
-    <!-- GAME OVER MODAL -->
-    <div class="modal-overlay" id="over-modal">
-      <div class="modal-card">
-        <div class="modal-title" style="color:var(--accent);">GAME OVER</div>
-        <div class="modal-sub" id="over-msg">So close! Try one more time.</div>
-        
-        <div class="score-box">
-          <div class="score-item">
-            <span>SCORE</span>
-            <strong id="final-score">0</strong>
-          </div>
-          <div class="score-item">
-            <span>BEST</span>
-            <strong id="final-best">0</strong>
-          </div>
-          <div class="score-item">
-            <span>COINS</span>
-            <strong style="color:var(--gold);" id="final-coins">+0</strong>
-          </div>
-        </div>
-
-        <!-- REWARDED AD BUTTON -->
-        <button class="btn-block btn-gold" id="btn-double" onclick="doubleCoinsAd()">
-          📺 DOUBLE COINS (2X BONUS)
-        </button>
-
-        <!-- PLAY AGAIN BUTTON (Triggers Pop-under every 3rd time) -->
-        <button class="btn-block btn-primary" onclick="replayGame()">
-          🔄 PLAY AGAIN
-        </button>
-
-        <!-- VIRAL WHATSAPP SHARE -->
-        <button class="btn-block btn-whatsapp" onclick="shareWhatsApp()">
-          ⚔️ CHALLENGE A FRIEND (+25 🪙)
-        </button>
-
-        <button class="btn-block btn-ghost" onclick="quitToHub()">
-          🏠 MAIN MENU
-        </button>
-      </div>
-    </div>
-
-    <!-- DAILY REWARD MODAL -->
-    <div class="modal-overlay" id="daily-modal">
-      <div class="modal-card">
-        <div class="modal-title" style="color:var(--gold);">🔥 DAILY BONUS!</div>
-        <div class="modal-sub" id="daily-sub">Day 1 Streak Active! Come back tomorrow to keep it alive.</div>
-        <div style="font-size:42px; margin: 15px 0;">🎁 +<span id="daily-amount">50</span> 🪙</div>
-        <button class="btn-block btn-primary" onclick="closeDailyModal()">CLAIM REWARD</button>
-      </div>
-    </div>
-
+  <!-- BOTTOM 320x50 ADSTERRA BANNER -->
+  <div class="ad-banner-slot" id="bottom-ad-slot">
+    <iframe
+      title="Bottom Banner Ad"
+      width="320"
+      height="50"
+      frameborder="0"
+      scrolling="no"
+      style="border:0; overflow:hidden;"
+      srcdoc="<html><body style='margin:0;padding:0;background:transparent;'><script>atOptions={'key':'35e165b97d109618313093189a629d7b','format':'iframe','height':50,'width':320,'params':{}};</script><script src='https://bicea.org/22/35e165b97d109618313093189a629d7b'></script></body></html>">
+    </iframe>
   </div>
 
-  <!-- BOTTOM STICKY AD BANNER (Yahan Adsterra 320x50 code lagega) -->
-  <div class="ad-banner bottom" id="bottom-ad">
-    <span>[ ADSTERRA 320x50 BOTTOM BANNER SPACE ]</span>
-  </div>
-
-<script>
-/* =========================================================
-   💰 MONETIZATION CONFIG (Yahan Apna Adsterra Direct Link Daalo)
-   ========================================================= */
-const ADSTERRA_DIRECT_LINK = "https://www.google.com"; // <-- APNA ADSTERRA DIRECT LINK YAHAN PASTE KARNA
-let deathCounter = 0;
-
-function triggerSmartAd(force = false) {
-  deathCounter++;
-  if (force || deathCounter % 3 === 0) {
-    window.open(ADSTERRA_DIRECT_LINK, '_blank');
-  }
-}
-
-/* =========================================================
-   🔊 SOUND ENGINE (Zero External Files - Pure Web Audio API)
-   ========================================================= */
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-function playTone(freq, type, duration) {
-  if (audioCtx.state === 'suspended') audioCtx.resume();
-  const osc = audioCtx.createOscillator();
-  const gain = audioCtx.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-  gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
-  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-  osc.start();
-  osc.stop(audioCtx.currentTime + duration);
-}
-function sfxPoint() { playTone(600, 'sine', 0.12); setTimeout(()=>playTone(900, 'sine', 0.15), 60); }
-function sfxHit() { playTone(140, 'sawtooth', 0.35); }
-function sfxClick() { playTone(400, 'triangle', 0.08); }
-
-/* =========================================================
-   💾 RETENTION & SAVE SYSTEM (LocalStorage)
-   ========================================================= */
-let userData = JSON.parse(localStorage.getItem('neonArcadeData')) || {
-  coins: 50,
-  streak: 1,
-  lastLogin: "",
-  appInstalledReward: false,
-  selectedSkin: "#00f3ff",
-  unlockedSkins: ["#00f3ff"],
-  best: { dodge: 0, pulse: 0, orbit: 0 }
-};
-
-const SKINS = [
-  { name: "Cyber Blue", color: "#00f3ff", cost: 0 },
-  { name: "Neon Pink", color: "#ff0055", cost: 100 },
-  { name: "Toxic Green", color: "#00ff66", cost: 250 },
-  { name: "Royal Gold", color: "#ffb703", cost: 500 },
-  { name: "Plasma Purple", color: "#b5179e", cost: 1000 }
-];
-
-function saveData() {
-  localStorage.setItem('neonArcadeData', JSON.stringify(userData));
-  updateUI();
-}
-
-function updateUI() {
-  document.getElementById('ui-coins').innerText = userData.coins;
-  document.getElementById('ui-streak').innerText = userData.streak;
-  document.getElementById('best-dodge').innerText = userData.best.dodge;
-  document.getElementById('best-pulse').innerText = userData.best.pulse;
-  document.getElementById('best-orbit').innerText = userData.best.orbit;
-  renderShop();
-}
-
-function checkDailyStreak() {
-  const today = new Date().toDateString();
-  if (userData.lastLogin !== today) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
-    
-    if (userData.lastLogin === yesterday.toDateString()) {
-      userData.streak++;
-    } else if (userData.lastLogin !== "") {
-      userData.streak = 1;
+  <script>
+    // ADSTERRA AD TRIGGER HELPER (Reloads Popunder / Social Bar on Reward / Every 3rd Retry)
+    const POPUNDER_SRC = "https://afders.org/1/37809e3c984e1afaba9b638afed585fb";
+    function triggerAdsterraAd() {
+      try {
+        const s = document.createElement('script');
+        s.dataset.cfasync = "false";
+        s.src = POPUNDER_SRC + "?t=" + Date.now();
+        document.body.appendChild(s);
+      } catch (e) {}
     }
-    userData.lastLogin = today;
-    const reward = userData.streak * 30;
-    userData.coins += reward;
-    saveData();
 
-    document.getElementById('daily-amount').innerText = reward;
-    document.getElementById('daily-sub').innerText = `Day ${userData.streak} Streak! Play daily so your streak doesn't reset to 0!`;
-    document.getElementById('daily-modal').style.display = 'flex';
-  }
-}
-
-function closeDailyModal() {
-  sfxClick();
-  document.getElementById('daily-modal').style.display = 'none';
-}
-
-function showStreakInfo() {
-  alert(`🔥 Current Streak: ${userData.streak} Days!\nOpen this game every day to get bigger free coin drops!`);
-}
-
-function installAppPrompt() {
-  sfxClick();
-  alert("📲 TO INSTALL AS APP:\n\n1. Tap the 3 Dots (⋮) in the top-right corner of Chrome.\n2. Tap 'Add to Home screen'.\n\nNow you can play anytime with 1 tap!");
-  if (!userData.appInstalledReward) {
-    userData.coins += 50;
-    userData.appInstalledReward = true;
-    saveData();
-  }
-}
-
-/* =========================================================
-   🛒 SKIN SHOP LOGIC
-   ========================================================= */
-function renderShop() {
-  const container = document.getElementById('shop-container');
-  container.innerHTML = "";
-  SKINS.forEach(skin => {
-    const owned = userData.unlockedSkins.includes(skin.color);
-    const active = userData.selectedSkin === skin.color;
-    const div = document.createElement('div');
-    div.className = `skin-item ${active ? 'active' : ''}`;
-    div.innerHTML = `
-      <div class="skin-preview" style="background:${skin.color}; box-shadow:0 0 10px ${skin.color};"></div>
-      <div class="skin-name">${skin.name}</div>
-      <div class="skin-cost">${active ? 'EQUIPPED' : (owned ? 'OWNED' : '🪙 ' + skin.cost)}</div>
-    `;
-    div.onclick = () => selectOrBuySkin(skin);
-    container.appendChild(div);
-  });
-}
-
-function selectOrBuySkin(skin) {
-  sfxClick();
-  if (userData.unlockedSkins.includes(skin.color)) {
-    userData.selectedSkin = skin.color;
-    saveData();
-  } else if (userData.coins >= skin.cost) {
-    userData.coins -= skin.cost;
-    userData.unlockedSkins.push(skin.color);
-    userData.selectedSkin = skin.color;
-    sfxPoint();
-    saveData();
-  } else {
-    alert(`Need ${skin.cost - userData.coins} more coins! Play games to earn.`);
-  }
-}
-
-/* =========================================================
-   🎮 GAME ENGINE CORE (3-IN-1 CANVAS)
-   ========================================================= */
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-let activeGame = null;
-let animId = null;
-let score = 0;
-let earnedCoinsThisRound = 0;
-let doubledThisRound = false;
-let gameState = {};
-
-function resizeCanvas() {
-  canvas.width = canvas.parentElement.clientWidth;
-  canvas.height = canvas.parentElement.clientHeight;
-}
-window.addEventListener('resize', resizeCanvas);
-
-function startGame(type) {
-  sfxClick();
-  activeGame = type;
-  document.getElementById('hub-screen').style.display = 'none';
-  document.getElementById('over-modal').style.display = 'none';
-  document.getElementById('game-screen').style.display = 'flex';
-  resizeCanvas();
-  initGameMode(type);
-}
-
-function quitToHub() {
-  sfxClick();
-  cancelAnimationFrame(animId);
-  activeGame = null;
-  document.getElementById('game-screen').style.display = 'none';
-  document.getElementById('over-modal').style.display = 'none';
-  document.getElementById('hub-screen').style.display = 'flex';
-  updateUI();
-}
-
-function replayGame() {
-  sfxClick();
-  triggerSmartAd(false);
-  startGame(activeGame);
-}
-
-function triggerGameOver() {
-  sfxHit();
-  cancelAnimationFrame(animId);
-  
-  if (score > userData.best[activeGame]) {
-    userData.best[activeGame] = score;
-  }
-  earnedCoinsThisRound = Math.max(2, Math.floor(score * 1.5));
-  doubledThisRound = false;
-  userData.coins += earnedCoinsThisRound;
-  saveData();
-
-  document.getElementById('final-score').innerText = score;
-  document.getElementById('final-best').innerText = userData.best[activeGame];
-  document.getElementById('final-coins').innerText = `+${earnedCoinsThisRound}`;
-  document.getElementById('btn-double').style.display = 'flex';
-  document.getElementById('over-modal').style.display = 'flex';
-}
-
-function doubleCoinsAd() {
-  if (doubledThisRound) return;
-  sfxPoint();
-  triggerSmartAd(true);
-  userData.coins += earnedCoinsThisRound;
-  doubledThisRound = true;
-  document.getElementById('final-coins').innerText = `+${earnedCoinsThisRound * 2}`;
-  document.getElementById('btn-double').style.display = 'none';
-  saveData();
-}
-
-function shareWhatsApp() {
-  sfxClick();
-  userData.coins += 25;
-  saveData();
-  const url = window.location.href;
-  const text = `🔥 I just scored ${score} in NEON ARCADE! 99% can't beat my score. Play instantly (No Download): ${url}`;
-  window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-}
-
-/* =========================================================
-   🕹️ 3 ADDICTIVE GAME MODES
-   ========================================================= */
-function initGameMode(type) {
-  score = 0;
-  document.getElementById('hud-score').innerText = score;
-  const w = canvas.width;
-  const h = canvas.height;
-
-  if (type === 'dodge') {
-    gameState = {
-      px: w / 2,
-      py: h - 70,
-      pr: 16,
-      blocks: [],
-      frame: 0,
-      speed: 4.5
-    };
-  } else if (type === 'pulse') {
-    gameState = {
-      r: 20,
-      targetR: 95,
-      growing: true,
-      speed: 2.6,
-      tolerance: 16
-    };
-  } else if (type === 'orbit') {
-    gameState = {
-      by: h / 2,
-      vy: 0,
-      gravity: 0.42,
-      jump: -7.8,
-      pipes: [],
-      frame: 0
-    };
-  }
-  cancelAnimationFrame(animId);
-  gameLoop();
-}
-
-canvas.addEventListener('touchmove', (e) => {
-  if (activeGame === 'dodge') {
-    const rect = canvas.getBoundingClientRect();
-    gameState.px = e.touches[0].clientX - rect.left;
-  }
-});
-canvas.addEventListener('mousemove', (e) => {
-  if (activeGame === 'dodge' && e.buttons === 1) {
-    const rect = canvas.getBoundingClientRect();
-    gameState.px = e.clientX - rect.left;
-  }
-});
-canvas.addEventListener('pointerdown', (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const x = e.clientX - rect.left;
-
-  if (activeGame === 'dodge') {
-    gameState.px = x;
-  } else if (activeGame === 'pulse') {
-    const diff = Math.abs(gameState.r - gameState.targetR);
-    if (diff <= gameState.tolerance) {
-      score++;
-      sfxPoint();
-      document.getElementById('hud-score').innerText = score;
-      gameState.speed = Math.min(6.5, gameState.speed + 0.18);
-      gameState.targetR = 55 + Math.random() * 65;
-    } else {
-      triggerGameOver();
+    // SOUND SYNTHESIZER (Web Audio API)
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    function playBeep(freq = 440, duration = 0.08, type = 'sine') {
+      try {
+        if (!audioCtx) audioCtx = new AudioCtx();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.12, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + duration);
+      } catch (e) {}
     }
-  } else if (activeGame === 'orbit') {
-    gameState.vy = gameState.jump;
-    sfxClick();
-  }
-});
 
-function gameLoop() {
-  const w = canvas.width;
-  const h = canvas.height;
-  ctx.fillStyle = '#050508';
-  ctx.fillRect(0, 0, w, h);
+    // PLAYER DATA & LOCALSTORAGE
+    let coins = parseInt(localStorage.getItem('na_coins') || '50', 10);
+    let streak = parseInt(localStorage.getItem('na_streak') || '1', 10);
+    let bestScores = JSON.parse(localStorage.getItem('na_best') || '{"dodge":0,"lock":0,"jump":0}');
+    let ownedSkins = JSON.parse(localStorage.getItem('na_skins') || '["#00f3ff"]');
+    let activeSkin = localStorage.getItem('na_active_skin') || '#00f3ff';
 
-  const skin = userData.selectedSkin;
+    const SKINS = [
+      { name: 'Cyber Cyan', color: '#00f3ff', price: 0 },
+      { name: 'Neon Pink', color: '#ff007f', price: 100 },
+      { name: 'Solar Gold', color: '#ffb703', price: 200 },
+      { name: 'Matrix Green', color: '#00ff66', price: 350 },
+      { name: 'Plasma Purple', color: '#b5179e', price: 500 },
+      { name: 'Crimson Void', color: '#ff2a2a', price: 750 }
+    ];
 
-  if (activeGame === 'dodge') {
-    gameState.frame++;
-    if (gameState.frame % Math.max(18, 42 - Math.floor(score / 3)) === 0) {
-      const bw = 36 + Math.random() * 45;
-      gameState.blocks.push({
-        x: Math.random() * (w - bw),
-        y: -30,
-        w: bw,
-        h: 18
+    // DAILY STREAK CHECK
+    function checkDailyStreak() {
+      const today = new Date().toDateString();
+      const lastLogin = localStorage.getItem('na_last_login');
+      if (lastLogin !== today) {
+        if (lastLogin) {
+          streak += 1;
+          coins += 15 * streak;
+        }
+        localStorage.setItem('na_last_login', today);
+        localStorage.setItem('na_streak', streak);
+        saveData();
+      }
+    }
+
+    function saveData() {
+      localStorage.setItem('na_coins', coins);
+      localStorage.setItem('na_best', JSON.stringify(bestScores));
+      localStorage.setItem('na_skins', JSON.stringify(ownedSkins));
+      localStorage.setItem('na_active_skin', activeSkin);
+      updateHUD();
+    }
+
+    function updateHUD() {
+      document.getElementById('coins-val').textContent = coins;
+      document.getElementById('streak-val').textContent = streak;
+      document.getElementById('best-dodge').textContent = bestScores.dodge;
+      document.getElementById('best-lock').textContent = bestScores.lock;
+      document.getElementById('best-jump').textContent = bestScores.jump;
+    }
+
+    function renderShop() {
+      const container = document.getElementById('skins-container');
+      container.innerHTML = '';
+      SKINS.forEach(s => {
+        const isOwned = ownedSkins.includes(s.color);
+        const isEquipped = activeSkin === s.color;
+        const div = document.createElement('div');
+        div.className = 'skin-item' + (isEquipped ? ' equipped' : '');
+        div.innerHTML = `
+          <div class="skin-swatch" style="background:${s.color}; color:${s.color}"></div>
+          <div class="skin-title">${s.name}</div>
+          <div class="skin-status">${isEquipped ? '✓ EQUIPPED' : (isOwned ? 'USE SKIN' : '🪙 ' + s.price)}</div>
+        `;
+        div.onclick = () => {
+          if (isOwned) {
+            activeSkin = s.color;
+            playBeep(660, 0.1);
+            saveData();
+            renderShop();
+          } else if (coins >= s.price) {
+            coins -= s.price;
+            ownedSkins.push(s.color);
+            activeSkin = s.color;
+            playBeep(880, 0.15);
+            saveData();
+            renderShop();
+          } else {
+            playBeep(180, 0.15, 'sawtooth');
+            alert('Not enough coins! Play games or tap +25 Free Coins.');
+          }
+        };
+        container.appendChild(div);
       });
     }
 
-    ctx.shadowBlur = 15;
-    ctx.shadowColor = skin;
-    ctx.fillStyle = skin;
-    ctx.beginPath();
-    ctx.arc(gameState.px, gameState.py, gameState.pr, 0, Math.PI * 2);
-    ctx.fill();
+    function switchTab(tab) {
+      document.getElementById('tab-play').classList.toggle('active', tab === 'play');
+      document.getElementById('tab-shop').classList.toggle('active', tab === 'shop');
+      document.getElementById('view-play').style.display = tab === 'play' ? 'flex' : 'none';
+      document.getElementById('view-shop').classList.toggle('active', tab === 'shop');
+      if (tab === 'shop') renderShop();
+    }
 
-    ctx.shadowColor = '#ff0055';
-    ctx.fillStyle = '#ff0055';
-    for (let i = gameState.blocks.length - 1; i >= 0; i--) {
-      let b = gameState.blocks[i];
-      b.y += gameState.speed + (score * 0.08);
-      ctx.fillRect(b.x, b.y, b.w, b.h);
+    // GAME ENGINE
+    const canvas = document.getElementById('gameCanvas');
+    const ctx = canvas.getContext('2d');
+    let currentGame = 'dodge';
+    let gameRunning = false;
+    let animId = null;
+    let score = 0;
+    let lastEarnedCoins = 0;
+    let deathCount = 0;
 
-      if (
-        gameState.px + gameState.pr > b.x &&
-        gameState.px - gameState.pr < b.x + b.w &&
-        gameState.py + gameState.pr > b.y &&
-        gameState.py - gameState.pr < b.y + b.h
-      ) {
-        ctx.shadowBlur = 0;
-        return triggerGameOver();
+    function resizeCanvas() {
+      const arena = document.getElementById('arena');
+      canvas.width = arena.clientWidth;
+      canvas.height = arena.clientHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    const GAME_INFO = {
+      dodge: {
+        title: 'CYBER DODGE',
+        desc: 'Tap left or right side of the box to dodge falling neon blocks!'
+      },
+      lock: {
+        title: 'NEON LOCK',
+        desc: 'Tap anywhere right when the moving laser hits the glowing gold target!'
+      },
+      jump: {
+        title: 'GRAVITY JUMP',
+        desc: 'Tap anywhere to thrust upward and fly through the neon gates!'
+      }
+    };
+
+    function selectGame(gameKey) {
+      currentGame = gameKey;
+      gameRunning = false;
+      cancelAnimationFrame(animId);
+      ['dodge', 'lock', 'jump'].forEach(k => {
+        document.getElementById('card-' + k).classList.toggle('selected', k === gameKey);
+      });
+      document.getElementById('start-title').textContent = GAME_INFO[gameKey].title;
+      document.getElementById('start-desc').textContent = GAME_INFO[gameKey].desc;
+      document.getElementById('start-overlay').classList.remove('hidden');
+      document.getElementById('gameover-overlay').classList.add('hidden');
+      resizeCanvas();
+      drawIdleBg();
+    }
+
+    function drawIdleBg() {
+      ctx.fillStyle = '#070810';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+
+    // STATE VARIABLES FOR GAMES
+    let dodgeState = {};
+    let lockState = {};
+    let jumpState = {};
+
+    function startGame() {
+      resizeCanvas();
+      document.getElementById('start-overlay').classList.add('hidden');
+      document.getElementById('gameover-overlay').classList.add('hidden');
+      score = 0;
+      gameRunning = true;
+      playBeep(520, 0.1);
+
+      if (currentGame === 'dodge') initDodge();
+      else if (currentGame === 'lock') initLock();
+      else if (currentGame === 'jump') initJump();
+
+      loop();
+    }
+
+    function endGame() {
+      gameRunning = false;
+      cancelAnimationFrame(animId);
+      playBeep(150, 0.25, 'sawtooth');
+      deathCount++;
+
+      if (score > bestScores[currentGame]) {
+        bestScores[currentGame] = score;
+      }
+      lastEarnedCoins = Math.max(2, Math.floor(score * 1.5));
+      coins += lastEarnedCoins;
+      saveData();
+
+      document.getElementById('final-score').textContent = score;
+      document.getElementById('earned-coins').textContent = lastEarnedCoins;
+      document.getElementById('double-btn').style.display = 'inline-block';
+      document.getElementById('gameover-overlay').classList.remove('hidden');
+    }
+
+    function retryGame() {
+      if (deathCount % 3 === 0) {
+        triggerAdsterraAd();
+      }
+      startGame();
+    }
+
+    function doubleCoinsAd() {
+      triggerAdsterraAd();
+      coins += lastEarnedCoins;
+      saveData();
+      playBeep(880, 0.15);
+      document.getElementById('earned-coins').textContent = lastEarnedCoins * 2 + ' (2X!)';
+      document.getElementById('double-btn').style.display = 'none';
+    }
+
+    function claimFreeBonus() {
+      triggerAdsterraAd();
+      coins += 25;
+      saveData();
+      playBeep(750, 0.15);
+    }
+
+    // 1. CYBER DODGE
+    function initDodge() {
+      dodgeState = {
+        px: canvas.width / 2,
+        py: canvas.height - 45,
+        pr: 15,
+        dir: 0,
+        speed: 5.5,
+        obstacles: [],
+        tick: 0
+      };
+    }
+
+    function updateDodge() {
+      const s = dodgeState;
+      s.tick++;
+      s.px += s.dir * s.speed;
+      if (s.px < s.pr) s.px = s.pr;
+      if (s.px > canvas.width - s.pr) s.px = canvas.width - s.pr;
+
+      const spawnRate = Math.max(18, 42 - Math.floor(score / 3));
+      if (s.tick % spawnRate === 0) {
+        const w = 42 + Math.random() * 55;
+        s.obstacles.push({
+          x: Math.random() * (canvas.width - w),
+          y: -20,
+          w: w,
+          h: 16,
+          vy: 3.8 + Math.min(5, score * 0.12)
+        });
       }
 
-      if (b.y > h) {
-        gameState.blocks.splice(i, 1);
-        score++;
-        sfxPoint();
-        document.getElementById('hud-score').innerText = score;
-      }
-    }
-    ctx.shadowBlur = 0;
-  }
+      // Draw Player
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = activeSkin;
+      ctx.fillStyle = activeSkin;
+      ctx.beginPath();
+      ctx.arc(s.px, s.py, s.pr, 0, Math.PI * 2);
+      ctx.fill();
 
-  else if (activeGame === 'pulse') {
-    const cx = w / 2;
-    const cy = h / 2;
+      // Update Obstacles
+      ctx.shadowColor = '#ff007f';
+      ctx.fillStyle = '#ff007f';
+      for (let i = s.obstacles.length - 1; i >= 0; i--) {
+        const o = s.obstacles[i];
+        o.y += o.vy;
+        ctx.fillRect(o.x, o.y, o.w, o.h);
 
-    if (gameState.growing) {
-      gameState.r += gameState.speed;
-      if (gameState.r > 140) gameState.growing = false;
-    } else {
-      gameState.r -= gameState.speed;
-      if (gameState.r < 15) gameState.growing = true;
-    }
-
-    ctx.lineWidth = gameState.tolerance;
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
-    ctx.beginPath();
-    ctx.arc(cx, cy, gameState.targetR, 0, Math.PI * 2);
-    ctx.stroke();
-
-    ctx.shadowBlur = 18;
-    ctx.shadowColor = skin;
-    ctx.lineWidth = 6;
-    ctx.strokeStyle = skin;
-    ctx.beginPath();
-    ctx.arc(cx, cy, gameState.r, 0, Math.PI * 2);
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-
-    ctx.fillStyle = '#888';
-    ctx.font = '14px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('TAP ANYWHERE WHEN RINGS ALIGN!', cx, h - 50);
-  }
-
-  else if (activeGame === 'orbit') {
-    gameState.frame++;
-    gameState.vy += gameState.gravity;
-    gameState.by += gameState.vy;
-
-    if (gameState.frame % 85 === 0) {
-      const gap = 135;
-      const topH = 50 + Math.random() * (h - gap - 120);
-      gameState.pipes.push({ x: w, topH, gap, passed: false });
-    }
-
-    const bx = w * 0.28;
-    const br = 13;
-
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = skin;
-    ctx.fillStyle = skin;
-    ctx.beginPath();
-    ctx.arc(bx, gameState.by, br, 0, Math.PI * 2);
-    ctx.fill();
-
-    ctx.shadowColor = '#00ff88';
-    ctx.fillStyle = '#00ff88';
-    for (let i = gameState.pipes.length - 1; i >= 0; i--) {
-      let p = gameState.pipes[i];
-      p.x -= 3.2;
-
-      ctx.fillRect(p.x, 0, 38, p.topH);
-      ctx.fillRect(p.x, p.topH + p.gap, 38, h);
-
-      if (bx + br > p.x && bx - br < p.x + 38) {
-        if (gameState.by - br < p.topH || gameState.by + br > p.topH + p.gap) {
+        // Collision check
+        const cx = Math.max(o.x, Math.min(s.px, o.x + o.w));
+        const cy = Math.max(o.y, Math.min(s.py, o.y + o.h));
+        const dx = s.px - cx;
+        const dy = s.py - cy;
+        if (dx * dx + dy * dy < s.pr * s.pr) {
           ctx.shadowBlur = 0;
-          return triggerGameOver();
+          endGame();
+          return;
+        }
+
+        if (o.y > canvas.height) {
+          s.obstacles.splice(i, 1);
+          score++;
+          playBeep(600, 0.04);
         }
       }
+      ctx.shadowBlur = 0;
+    }
 
-      if (!p.passed && p.x + 38 < bx) {
-        p.passed = true;
+    // 2. NEON LOCK
+    function initLock() {
+      lockState = {
+        angle: 0,
+        targetAngle: Math.random() * Math.PI * 2,
+        dir: 1,
+        speed: 0.042
+      };
+    }
+
+    function updateLock() {
+      const s = lockState;
+      s.angle = (s.angle + s.dir * s.speed + Math.PI * 2) % (Math.PI * 2);
+      const cx = canvas.width / 2;
+      const cy = canvas.height / 2;
+      const r = Math.min(cx, cy) - 45;
+
+      // Ring
+      ctx.lineWidth = 18;
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Target Dot
+      const tx = cx + Math.cos(s.targetAngle) * r;
+      const ty = cy + Math.sin(s.targetAngle) * r;
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = '#ffb703';
+      ctx.fillStyle = '#ffb703';
+      ctx.beginPath();
+      ctx.arc(tx, ty, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Player Pointer
+      const px = cx + Math.cos(s.angle) * r;
+      const py = cy + Math.sin(s.angle) * r;
+      ctx.shadowColor = activeSkin;
+      ctx.fillStyle = activeSkin;
+      ctx.beginPath();
+      ctx.arc(px, py, 10, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+
+      // Center score text
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '900 34px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(score, cx, cy);
+    }
+
+    function tapLock() {
+      const s = lockState;
+      let diff = Math.abs(s.angle - s.targetAngle);
+      if (diff > Math.PI) diff = Math.PI * 2 - diff;
+      if (diff < 0.28) {
         score++;
-        sfxPoint();
-        document.getElementById('hud-score').innerText = score;
+        playBeep(720, 0.07);
+        s.dir *= -1;
+        s.speed = Math.min(0.11, s.speed + 0.0025);
+        s.targetAngle = (s.angle + Math.PI * (0.5 + Math.random())) % (Math.PI * 2);
+      } else {
+        endGame();
+      }
+    }
+
+    // 3. GRAVITY JUMP
+    function initJump() {
+      jumpState = {
+        py: canvas.height / 2,
+        vy: 0,
+        gravity: 0.36,
+        pipes: [],
+        tick: 0
+      };
+    }
+
+    function updateJump() {
+      const s = jumpState;
+      s.tick++;
+      s.vy += s.gravity;
+      s.py += s.vy;
+
+      const px = 70;
+      const pr = 13;
+
+      if (s.py < pr || s.py > canvas.height - pr) {
+        endGame();
+        return;
       }
 
-      if (p.x < -50) gameState.pipes.splice(i, 1);
+      if (s.tick % 75 === 0) {
+        const gap = 115;
+        const topH = 40 + Math.random() * (canvas.height - gap - 80);
+        s.pipes.push({ x: canvas.width, topH, gap, passed: false });
+      }
+
+      // Draw Player
+      ctx.shadowBlur = 14;
+      ctx.shadowColor = activeSkin;
+      ctx.fillStyle = activeSkin;
+      ctx.beginPath();
+      ctx.arc(px, s.py, pr, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Pipes
+      ctx.shadowColor = '#00f3ff';
+      ctx.fillStyle = '#00f3ff';
+      for (let i = s.pipes.length - 1; i >= 0; i--) {
+        const p = s.pipes[i];
+        p.x -= 3.2;
+        ctx.fillRect(p.x, 0, 26, p.topH);
+        ctx.fillRect(p.x, p.topH + p.gap, 26, canvas.height - (p.topH + p.gap));
+
+        if (px + pr > p.x && px - pr < p.x + 26) {
+          if (s.py - pr < p.topH || s.py + pr > p.topH + p.gap) {
+            ctx.shadowBlur = 0;
+            endGame();
+            return;
+          }
+        }
+
+        if (!p.passed && p.x + 26 < px) {
+          p.passed = true;
+          score++;
+          playBeep(640, 0.06);
+        }
+
+        if (p.x < -30) s.pipes.splice(i, 1);
+      }
+      ctx.shadowBlur = 0;
     }
-    ctx.shadowBlur = 0;
 
-    if (gameState.by > h || gameState.by < 0) {
-      return triggerGameOver();
+    // MAIN LOOP
+    function loop() {
+      if (!gameRunning) return;
+      ctx.fillStyle = '#070810';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Score HUD in corner
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      ctx.font = '800 18px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('SCORE: ' + score, 14, 26);
+
+      if (currentGame === 'dodge') updateDodge();
+      else if (currentGame === 'lock') updateLock();
+      else if (currentGame === 'jump') updateJump();
+
+      if (gameRunning) animId = requestAnimationFrame(loop);
     }
-  }
 
-  animId = requestAnimationFrame(gameLoop);
-}
+    // INPUT HANDLERS
+    function handlePointerDown(clientX) {
+      if (!gameRunning) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      if (currentGame === 'dodge') {
+        dodgeState.dir = x < canvas.width / 2 ? -1 : 1;
+      } else if (currentGame === 'lock') {
+        tapLock();
+      } else if (currentGame === 'jump') {
+        jumpState.vy = -6.8;
+        playBeep(420, 0.05);
+      }
+    }
 
-checkDailyStreak();
-updateUI();
-</script>
+    canvas.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      handlePointerDown(e.touches[0].clientX);
+    }, { passive: false });
+
+    canvas.addEventListener('touchend', () => {
+      if (currentGame === 'dodge') dodgeState.dir = 0;
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+      handlePointerDown(e.clientX);
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      if (currentGame === 'dodge') dodgeState.dir = 0;
+    });
+
+    // INIT ON LOAD
+    checkDailyStreak();
+    updateHUD();
+    setTimeout(() => {
+      resizeCanvas();
+      drawIdleBg();
+    }, 100);
+  </script>
+
+  <!-- ADSTERRA SOCIAL BAR SCRIPT -->
+  <script data-cfasync="false" src="https://bicea.org/14/0345a3eb574c047c9554ed37ef988e31"></script>
 </body>
 </html>
